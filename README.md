@@ -1,7 +1,8 @@
 # Revalidatiezaal EmbeddedProject
+
 Embedded Project Groep D
 
-# Huisstijl code – design patterns
+## Huisstijl code – design patterns
 
 **NOTE**: Maak je gebruik van een omgeving die zijn eigen notatie gebruikt? Maak dan gebruik van deze notatie. Een voorbeeld hiervan is de default code notatie van bijv. variabelenamen die in de **STM IDE** omgeving wordt gebruikt (zie voorbeeld hieronder).
 
@@ -14,13 +15,13 @@ void SystemClock_Config(void)
 }
 ```
 
-## 1. Classnamen
+### 1. Classnamen
 
 **Namenstijl**: Gebruik PascalCase voor classnamen, waarbij elk woord begint met een hoofdletter.
 
 * **Voorbeeld**: `MijnKlasse`, `GebruikersInvoer`, `DatabaseConnectie`.
 
-## 2. Variabelenamen
+### 2. Variabelenamen
 
 **Namenstijl**: Gebruik camelCase voor variabelenamen.
 
@@ -31,7 +32,7 @@ void SystemClock_Config(void)
 * **Goed**: `aantalStudenten`, `gebruikersNaam`, `totaalBedrag`.
 * **Vermijd**: `x`, `temp`, `abc`.
 
-## 3. Functienamen
+### 3. Functienamen
 
 **Namenstijl**: Gebruik camelCase voor functienamen.
 
@@ -50,13 +51,13 @@ void parentFunctie(int parameter1, double parameter2)
 }
 ```
 
-## 4. Codeopmaak
+### 4. Codeopmaak
 
 **Inspringing**: Gebruik een inspringing van 4 spaties.
 
 **Leesbaarheid**: Houd de code leesbaar door voldoende witruimte te gebruiken en logische blokken te scheiden.
 
-## 5. Commentaar
+### 5. Commentaar
 
 **Blok commentaar**: Begin commentaar boven codeblokken met hoofdletters op de volgende manier:
 
@@ -73,7 +74,7 @@ void parentFunctie(int parameter1, double parameter2)
 int voorbeeld = 10; /* inline commentaar zonder hoofdletter. */
 ```
 
-## 6. Documentatie
+### 6. Documentatie
 
 **Doxygen format**: Documenteer code met behulp van Doxygen stijlcommentaar (zie voorbeeld hieronder).
 
@@ -111,7 +112,7 @@ int voorbeeld = 10; /* inline commentaar zonder hoofdletter. */
 * `@todo`: Taak die nog moet worden voltooid.
 * `@deprecated`: Beschrijving van waarom het element verouderd is.
 
-## 7. Bestandsindeling
+### 7. Bestandsindeling
 
 **Bestandsnaamconventie**: Gebruik kleine letters en underscores voor bestandsnamen.
 
