@@ -2,10 +2,6 @@
 
 Embedded Project Groep D
 
-## Menu
-
-1. [Huisstijl code – design patterns](#1-huisstijl-code–-design-patterns)
-
 ## 1. Huisstijl code – design patterns
 
 **NOTE**: Maak je gebruik van een omgeving die zijn eigen notatie gebruikt? Maak dan gebruik van deze notatie. Een voorbeeld hiervan is de default code notatie van bijv. variabelenamen die in de **STM IDE** omgeving wordt gebruikt (zie voorbeeld hieronder).
