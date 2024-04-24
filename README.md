@@ -4,7 +4,7 @@ Embedded Project Groep D
 
 ## Menu
 
-1. [Huisstijl code – design patterns](#huisstijl-code-–-design-patterns)
+1. [Huisstijl code – design patterns](#1-huisstijl-code–-design-patterns)
 
 ## 1. Huisstijl code – design patterns
 
