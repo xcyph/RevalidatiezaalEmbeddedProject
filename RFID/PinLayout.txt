@@ -1,0 +1,6 @@
+D3 --> RST
+D8 --> SDA
+D7 --> MOSI
+D6 --> MISO
+D5 --> SCK
+D0 --> GROENE_LED
