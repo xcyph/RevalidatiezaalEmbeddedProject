@@ -1,3 +1,11 @@
+/*!
+  @file RFID.ino
+  @date 3 may 2024
+  @author Ruben van Eijken
+
+  Leest de RFID sensor uit vanaf een Wemos D1 mini en kan dit doorsturen via een socket-verbinding.
+*/
+
 #include "MFRC522.h"
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WiFi.h>
@@ -20,13 +28,8 @@ int cardRead = 0;
 unsigned long readTime;
 char UID[10];
 
-void setup() {
-  pinMode(LED_PIN, OUTPUT);
-
-  Serial.begin(115200);    // Initialize serial communications
-  SPI.begin();          // Init SPI bus
-  mfrc522.PCD_Init();    // Init MFRC522
-
+/*! Wordt eenmalig uitgevoerd om de Wemos te verbinden met de hotspot van Raspberry Pi */
+void wifiInit() {
   // Connecting to WiFi...
   Serial.print("Connecting to ");
   Serial.print(WIFI_SSID);
@@ -49,8 +52,27 @@ void setup() {
   // Start de socketserver
   server.begin();
   Serial.println("Server started");
+
+  void setup() {
+  pinMode(LED_PIN, OUTPUT);
+
+  Serial.begin(115200);    // Initialize serial communications
+  SPI.begin();          // Init SPI bus
+  mfrc522.PCD_Init();    // Init MFRC522
+  }
 }
 
+/*! Zet een byte array om naar een char array */
+void byteToCharArray(byte *byteArray, byte arraySize, char *charArray) {
+  for (byte i = 0; i < arraySize; i++) {
+    // Elke byte omzetten naar twee karakters in het hexadecimale formaat
+    sprintf(charArray + i * 2, "%02X", byteArray[i]);
+  }
+  // Voeg een nulterminator toe aan het einde van de char-array
+  charArray[arraySize * 2] = '\0';
+}
+
+/*! Wordt continue doorlopen zolang de Wemos aan staat */
 void loop() {
   if (cardRead == 1 && millis() - readTime > 1000) {
     cardRead = 0;
@@ -81,7 +103,7 @@ void loop() {
     Serial.println("New client connected");
 
     if (cardRead == 0) {
-      client.println("Geen Data");
+      client.println("GeenData");
       Serial.println("Data verstuurd: Geen Data");
     }
     else {
@@ -94,14 +116,4 @@ void loop() {
     client.stop();
     Serial.println("Client disconnected");
   }
-}
-
-// Zet een byte array om naar een char array [ChatGPT]
-void byteToCharArray(byte *byteArray, byte arraySize, char *charArray) {
-  for (byte i = 0; i < arraySize; i++) {
-    // Elke byte omzetten naar twee karakters in het hexadecimale formaat
-    sprintf(charArray + i * 2, "%02X", byteArray[i]);
-  }
-  // Voeg een nulterminator toe aan het einde van de char-array
-  charArray[arraySize * 2] = '\0';
 }
