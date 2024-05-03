@@ -19,6 +19,7 @@
 char bufferDeur[5] = "open";
 char bufferLCD[8];
 
+/*! Stuurt een string (hartslag + zuurstof) naar STM32 bordje met LCD */
 void stuurnaarLCD(char hartslag, char zuurstof) {
 	int fd = open("/dev/i2c-1", O_RDWR);
 	ioctl(fd, I2C_SLAVE, I2C_ADDR_LCD);
@@ -27,6 +28,7 @@ void stuurnaarLCD(char hartslag, char zuurstof) {
 	printf("LCD sturen\n");
 }
 
+/*! Stuurt een string ("open") naar STM32 bordje met servo */
 void openDeur() {
 	int a = 0;
 	int fd = open("/dev/i2c-1", O_RDWR);
