@@ -5,6 +5,7 @@
 #include <unistd.h>
 #define PORT 8080
 
+/*! Leest de RFID data van de betreffende Wemos uit en sluit vervolgens de connectie */
 void readRFID(const char* ip, char* dest, int destSize) {
     int client_fd;
     struct sockaddr_in serv_addr;
@@ -39,6 +40,7 @@ void readRFID(const char* ip, char* dest, int destSize) {
     }
 }
 
+/*! Leest de Pulsoxy data van de betreffende Wemos uit en sluit vervolgens de connectie */
 void readPulsoxy(const char* ip, char* data, int dataSize, int stop) {
     int client_fd;
     struct sockaddr_in serv_addr;
@@ -136,6 +138,8 @@ void communicateWithServer(const char* serverIP, const char* filePath) {
     close(client_fd);
 }
 */
+
+/*! Stuurt een string naar de server en sluit vervolgens de connectie */
 void sendStringToServer(const char* ip, char* data, int dataSize) {
     int client_fd;
     struct sockaddr_in serv_addr;
