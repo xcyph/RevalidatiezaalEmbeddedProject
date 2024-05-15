@@ -47,8 +47,7 @@ const int serverPort = 8080;
 WiFiServer server(serverPort);
 
 
- // Initialize buzzer pin
-  pinMode(buzzerPin, OUTPUT);
+ 
 
 /*! Wordt eenmalig uitgevoerd om de Wemos te verbinden met de hotspot van Raspberry Pi */
 void wifiInit()
@@ -179,6 +178,8 @@ void setup()
 
   sensorInit();
   wifiInit();
+  // Initialize buzzer pin
+  pinMode(buzzerPin, OUTPUT);
 }
 
 /*! Wordt continue doorlopen zolang de Wemos aan staat */
