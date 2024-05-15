@@ -36,11 +36,19 @@ int8_t validHeartRate; //indicator to show if the heart rate calculation is vali
 
 byte pulseLED = 12; //Must be on PWM pin
 
+
+// Buzzer pin
+const int buzzerPin = 14; // GPIO 14 (D5)
+
 // Set WiFi credentials
 #define WIFI_SSID "revalidatieD-wifi"
 #define WIFI_PASS ""
 const int serverPort = 8080;
 WiFiServer server(serverPort);
+
+
+ // Initialize buzzer pin
+  pinMode(buzzerPin, OUTPUT);
 
 /*! Wordt eenmalig uitgevoerd om de Wemos te verbinden met de hotspot van Raspberry Pi */
 void wifiInit()
@@ -156,6 +164,10 @@ void readSensor()
   }
   //After gathering 25 new samples recalculate HR and SP02
   maxim_heart_rate_and_oxygen_saturation(irBuffer, bufferLength, redBuffer, &spo2, &validSPO2, &heartRate, &validHeartRate);
+
+    
+
+
 }
 
 /*! Wordt eenmalig uitgevoerd bij het opstarten van de Wemos */
@@ -199,6 +211,12 @@ void loop()
         // Stuur een end message terug naar de client
         Serial.println("Data verzonden: end");
         //client.println("end");
+        // Check if heart rate exceeds threshold and activate buzzer if it does
+          if (heartRate > 100) { // You can adjust the threshold value as needed
+            tone(buzzerPin, 1000); // Send 1KHz sound signal... // Turn on the buzzer
+          } else {
+            noTone(buzzerPin);     // Stop sound... // Turn off the buzzer
+          }
       }
     }
     // Sluit de verbinding met de client
