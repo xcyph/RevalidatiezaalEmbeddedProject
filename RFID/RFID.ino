@@ -28,48 +28,20 @@ int cardRead = 0;
 unsigned long readTime;
 char UID[10];
 
-/*! Wordt eenmalig uitgevoerd om de Wemos te verbinden met de hotspot van Raspberry Pi */
-void wifiInit() {
-  // Connecting to WiFi...
-  Serial.print("Connecting to ");
-  Serial.print(WIFI_SSID);
-
-  // Begin WiFi
-  WiFi.begin(WIFI_SSID, WIFI_PASS);
-
-  // Loop continuously while WiFi is not connected
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(100);
-    Serial.print(".");
-  }
-
-  // Connected to WiFi
-  Serial.println();
-  Serial.print("Connected! IP address: ");
-  Serial.println(WiFi.localIP());
-
-  // Start de socketserver
-  server.begin();
-  Serial.println("Server started");
-
-  void setup() {
-  pinMode(LED_PIN, OUTPUT);
-
-  Serial.begin(115200);    // Initialize serial communications
-  SPI.begin();          // Init SPI bus
-  mfrc522.PCD_Init();    // Init MFRC522
-  }
-}
+/*! Maakt verbinding met een wifi-netwerk, wordt eenmalig uitgevoerd bij het opstarten */
+void wifiStart();
 
 /*! Zet een byte array om naar een char array */
-void byteToCharArray(byte *byteArray, byte arraySize, char *charArray) {
-  for (byte i = 0; i < arraySize; i++) {
-    // Elke byte omzetten naar twee karakters in het hexadecimale formaat
-    sprintf(charArray + i * 2, "%02X", byteArray[i]);
-  }
-  // Voeg een nulterminator toe aan het einde van de char-array
-  charArray[arraySize * 2] = '\0';
+void byteToCharArray(byte*, byte, char*);
+
+/*! Wordt eenmalig uitgevoerd bij het aanzetten van de Wemos */
+void setup() {
+  Serial.begin(115200);    // Initialize serial communications
+  Wire.begin();
+  SPI.begin();          // Init SPI bus
+  mfrc522.PCD_Init();    // Init MFRC522
+
+  wifiStart();
 }
 
 /*! Wordt continue doorlopen zolang de Wemos aan staat */
@@ -116,4 +88,33 @@ void loop() {
     client.stop();
     Serial.println("Client disconnected");
   }
+}
+
+void wifiStart() {
+  // Verbinden met wifi...
+  Serial.print("Verbinding maken met: ");
+  Serial.print(WIFI_SSID);
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
+  // Loop zolang er geen wifi connectie is
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(100);
+    Serial.print(".");
+  }
+  // Verbonden met wifi
+  Serial.println();
+  Serial.print("Verbonden! IP adres: ");
+  Serial.println(WiFi.localIP());
+  // Start de socketserver
+  server.begin();
+  Serial.println("Socketserver gestart");
+}
+
+void byteToCharArray(byte *byteArray, byte arraySize, char *charArray) {
+  for (byte i = 0; i < arraySize; i++) {
+    // Elke byte omzetten naar twee karakters in het hexadecimale formaat
+    sprintf(charArray + i * 2, "%02X", byteArray[i]);
+  }
+  // Voeg een nulterminator toe aan het einde van de char-array
+  charArray[arraySize * 2] = '\0';
 }

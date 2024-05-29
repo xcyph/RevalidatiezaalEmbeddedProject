@@ -64,14 +64,7 @@ void loop()
   WiFiClient client = server.available();
   // Als er een client verbonden is:
   if (client) {
-    while (client.connected()) {
-      if (client.available()) {
-        // Lees de data van de client
-        // String data = client.readStringUntil('\n');
-        // Serial.println("Received data: " + data);
-        client.println(txBuffer);
-      }
-    }
+    client.println(txBuffer);
     // Sluit de verbinding met de client
     client.stop();
     Serial.println("Client verbinding verbroken");

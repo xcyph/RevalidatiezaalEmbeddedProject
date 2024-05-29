@@ -32,10 +32,11 @@ char txBuffer[TXBUFFER_SIZE];
 
 // Encoder
 const byte encoderS1 = 13;
+const byte encoderS2 = 12;
 volatile int encoderCount = 0;
 
 // Buzzer
-const byte buzzerPin = 12;
+const byte buzzerPin = 14;
 
 /*! Variables voor het opslaan van de data van de pulsoxymeter */
 int32_t pulsoxyBufferLength = 100; //data length
@@ -69,7 +70,9 @@ void setup() {
   wifiStart();
   pinMode(buzzerPin, OUTPUT);
   pinMode(encoderS1, INPUT_PULLUP);
+  pinMode(encoderS2, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(encoderS1), encoderInt, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(encoderS2), encoderInt, CHANGE);
   pulsoxyInit();
   pulsoxyCalibrate();
 }
@@ -92,14 +95,7 @@ void loop() {
   WiFiClient client = server.available();
   // Als er een client verbonden is:
   if (client) {
-    while (client.connected()) {
-      if (client.available()) {
-        // Lees de data van de client
-        // String data = client.readStringUntil('\n');
-        // Serial.println("Received data: " + data);
-        client.println(txBuffer);
-      }
-    }
+    client.println(txBuffer);
     // Sluit de verbinding met de client
     client.stop();
     Serial.println("Client verbinding verbroken");
@@ -201,5 +197,27 @@ void pulsoxyRead() {
 }
 
 void encoderInt() {
-  encoderCount++;
+  // Encoder interrupt routine for both pins. Updates counter
+  // if they are valid and have rotated a full indent
+
+  static uint8_t old_AB = 3;  // Lookup table index
+  static int8_t encval = 0;   // Encoder value
+  static const int8_t enc_states[]  = {0,-1,1,0,1,0,0,-1,-1,0,0,1,0,1,-1,0}; // Lookup table
+
+  old_AB <<=2;  // Remember previous state
+
+  if (digitalRead(encoderS1)) old_AB |= 0x02; // Add current state of pin A
+  if (digitalRead(encoderS2)) old_AB |= 0x01; // Add current state of pin B
+
+  encval += enc_states[( old_AB & 0x0f )];
+
+  // Update counter if encoder has rotated a full indent, that is at least 4 steps
+  if( encval > 3 ) {                                    // Four steps forward
+    encoderCount++;
+    encval = 0;
+  }
+  else if( encval < -3 ) {                              // Four steps backwards
+    encoderCount++;
+    encval = 0;
+  }
 }
