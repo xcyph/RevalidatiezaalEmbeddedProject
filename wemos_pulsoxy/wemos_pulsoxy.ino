@@ -1,6 +1,6 @@
 /*!
   @file wemos_pulsoxy.ino
-  @date 21 may 2024
+  @date 31 may 2024
   @author Ruben van Eijken
 
   Leest de pulsoxymeter uit vanaf een Wemos D1 mini en kan dit doorsturen via een socket-verbinding.
@@ -79,9 +79,10 @@ void setup() {
 
 /*! Wordt continue doorlopen zolang de Wemos aan staat */
 void loop() {
+
   pulsoxyRead();
   // Controleer op te hoge hartslag
-  if (heartRate > 160) tone(buzzerPin, 1000);
+  if (heartRate > 160 || spo2 < 90) tone(buzzerPin, 1000);
   else noTone(buzzerPin);
   // Zet data in string voor Pi
   int16_t hr = (int16_t)heartRate;
@@ -104,7 +105,7 @@ void loop() {
 
 void wifiStart() {
   // Verbinden met wifi...
-  Serial.print("Verbinding maken met: ");
+  Serial.print("\nVerbinding maken met: ");
   Serial.print(WIFI_SSID);
   WiFi.begin(WIFI_SSID, WIFI_PASS);
   // Loop zolang er geen wifi connectie is
@@ -126,14 +127,13 @@ void pulsoxyInit() {
   // Gebruik standaard I2C poort, 400kHz speed
   if (!pulsoxySensor.begin(Wire, I2C_SPEED_FAST)) {
     Serial.println(F("MAX30105 was not found. Please check wiring/power."));
-    while (1);
   }
-  byte ledBrightness = 45; //Options: 0=Off to 255=50mA
-  byte sampleAverage = 4; //Options: 1, 2, 4, 8, 16, 32
-  byte ledMode = 2; //Options: 1 = Red only, 2 = Red + IR, 3 = Red + IR + Green
-  byte sampleRate = 200; //Options: 50, 100, 200, 400, 800, 1000, 1600, 3200
-  int pulseWidth = 411; //Options: 69, 118, 215, 411
-  int adcRange = 4096; //Options: 2048, 4096, 8192, 16384
+  byte ledBrightness = 45;  //Options: 0=Off to 255=50mA
+  byte sampleAverage = 4;   //Options: 1, 2, 4, 8, 16, 32
+  byte ledMode = 2;         //Options: 1 = Red only, 2 = Red + IR, 3 = Red + IR + Green
+  byte sampleRate = 200;    //Options: 50, 100, 200, 400, 800, 1000, 1600, 3200
+  int pulseWidth = 411;     //Options: 69, 118, 215, 411
+  int adcRange = 4096;      //Options: 2048, 4096, 8192, 16384
   // Configureer sensor met deze parameters
   pulsoxySensor.setup(ledBrightness, sampleAverage, ledMode, sampleRate, pulseWidth, adcRange);
 }
@@ -209,15 +209,12 @@ void encoderInt() {
   if (digitalRead(encoderS1)) old_AB |= 0x02; // Add current state of pin A
   if (digitalRead(encoderS2)) old_AB |= 0x01; // Add current state of pin B
 
-  encval += enc_states[( old_AB & 0x0f )];
+  encval += enc_states[( old_AB & 0x0f )] != 0;
 
   // Update counter if encoder has rotated a full indent, that is at least 4 steps
-  if( encval > 3 ) {                                    // Four steps forward
+  if( encval > 5 ) {                                    // Four steps forward
     encoderCount++;
     encval = 0;
-  }
-  else if( encval < -3 ) {                              // Four steps backwards
-    encoderCount++;
-    encval = 0;
+    Serial.println("+afstand");
   }
 }
