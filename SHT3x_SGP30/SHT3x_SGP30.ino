@@ -3,6 +3,7 @@
 #include <ArtronShop_SHT3x.h>
 #include <Adafruit_SGP30.h>
 #include <ESP8266WiFi.h>
+#include <Servo.h>
 
 #define TXBUFFER_SIZE 49
 #define WIFI_SSID "revalidatieD-wifi"
@@ -11,6 +12,8 @@
 ArtronShop_SHT3x sht3x(0x44, &Wire); // ADDR: 0 => 0x44, ADDR: 1 => 0x45
 
 Adafruit_SGP30 sgp30;
+
+Servo myservo;
 
 const int ledPin = D0;
 const int CO2_THRESHOLD = 1200;
@@ -37,10 +40,10 @@ void setup()
 {
   Serial.begin(115200); 
   Wire.begin();
+  myservo.attach(ledPin);
+
   wifiStart();
 
-  pinMode(ledPin, OUTPUT);
-  
   while (!sht3x.begin()) {
     Serial.println("SHT3x sensor niet gevonden!");
     delay(1000);
@@ -69,16 +72,16 @@ void loop()
     client.stop();
     Serial.println("Client verbinding verbroken");
   }
-  // if ((temperature >= 27 && temperature < 30) || (humidity >= 60 && humidity < 70)) {
-  //   analogWrite(ledPin, 64); // 25% brightness
-  // } else if ((temperature >= 30) || (humidity >= 70)) {
-  //   analogWrite(ledPin, 255); // 100% brightness
-  // } else if (sgp30.eCO2 > CO2_THRESHOLD) {
-  //   Serial.println("Waarschuwing: CO2-niveau is te hoog!");
-  //   analogWrite(ledPin, 255); // LED aan
-  // } else {
-  //   analogWrite(ledPin, 0); // LED uit
-  // }
+  if ((temperature >= 27 && temperature < 30) || (humidity >= 60 && humidity < 70)) {
+    myservo.write(99);  // ventilator 50%
+  } else if ((temperature >= 30) || (humidity >= 70)) {
+    myservo.write(120); // ventilator 100%
+  } else if (sgp30.eCO2 > CO2_THRESHOLD) {
+    Serial.println("Waarschuwing: CO2-niveau is te hoog!");
+    myservo.write(120); // ventilator 100%
+  } else {
+    myservo.write(90); // ventilator 0%
+  }
 }
 
 void co2Read() {
