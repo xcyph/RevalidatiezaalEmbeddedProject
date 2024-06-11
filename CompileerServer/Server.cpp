@@ -4,6 +4,10 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
+#include <sys/ioctl.h>
+#include <linux/i2c-dev.h>
+
+using namespace std;  // Voeg deze regel toe om de standaard namespace te gebruiken
 
 #define TX_BUFFERSIZEDEUR 5
 #define TX_BUFFERSIZELCD 13
@@ -14,6 +18,7 @@
 Server::Server(int port) {
     memset(buffer_, 0, sizeof(buffer_));
     memset(bufferDeur_, 0, sizeof(bufferDeur_));
+    strcpy(bufferDeur_, "open");
     memset(bufferLCD_, 0, sizeof(bufferLCD_));
     memset(RX_Buffer_, 0, sizeof(RX_Buffer_));
 
@@ -67,7 +72,7 @@ void Server::run() {
 void Server::handleClient() {
     int valread = read(new_socket_, buffer_, 1024 - 1);
     buffer_[valread] = '\0';
-    std::cout << "Data ontvangen: " << buffer_ << std::endl;
+    cout << "Data ontvangen: " << buffer_ << endl;
 
     if (valread > 0) {
         if (strstr(buffer_, "F7A1061B")) {
@@ -82,16 +87,25 @@ void Server::handleClient() {
 }
 
 void Server::stuurnaarLCD(int hartslag, int zuurstof, int encoder) {
-    sprintf(bufferLCD_, "%d %d %d", hartslag, zuurstof, encoder);
-    std::cout << "Naar LCD verzenden..." << std::endl;
+    snprintf(bufferLCD_, TX_BUFFERSIZELCD, "%d %d %d", hartslag, zuurstof, encoder);
+    cout << "Naar LCD verzenden..." << endl;
     int fd = open("/dev/i2c-1", O_RDWR);
-    ioctl(fd, I2C_SLAVE, I2C_ADDR_LCD);
-    write(fd, bufferLCD_, TX_BUFFERSIZELCD);
+    if (fd < 0) {
+        perror("Bus niet geopend");
+        exit(EXIT_FAILURE);
+    }
+    if (ioctl(fd, I2C_SLAVE, I2C_ADDR_LCD) < 0) {
+        perror("Niet verbinding kunnen maken met 0x10");
+        exit(EXIT_FAILURE);
+    }
+    if (write(fd, bufferLCD_, TX_BUFFERSIZELCD) != TX_BUFFERSIZELCD) {
+        perror("Niet geschreven naar LCD");
+    }
     close(fd);
 }
 
 void Server::openDeur() {
-    std::cout << "Deur openen..." << std::endl;
+    cout << "Deur openen..." << endl;
     int fd = open("/dev/i2c-1", O_RDWR);
     if (fd < 0) {
         perror("Bus niet geopend");
@@ -102,9 +116,11 @@ void Server::openDeur() {
         exit(1);
     }
     if (write(fd, bufferDeur_, TX_BUFFERSIZEDEUR) != TX_BUFFERSIZEDEUR) {
-        perror("Niet geschreven");
+        perror("Niet geschreven naar deur");
     }
-    read(fd, RX_Buffer_, RX_BUFFERSIZE);
-    std::cout << RX_Buffer_ << std::endl;
+    if (read(fd, RX_Buffer_, RX_BUFFERSIZE) != RX_BUFFERSIZE) {
+        perror("Niet gelezen van deur");
+    }
+    cout << RX_Buffer_ << endl;
     close(fd);
 }
