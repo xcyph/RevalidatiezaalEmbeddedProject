@@ -12,7 +12,7 @@ int connectToServer(const char* ip) {
     client_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (client_fd < 0) {
         printf("\nSocket creation error\n");
-        return 0;
+        return;
     }
 
     serv_addr.sin_family = AF_INET;
@@ -21,22 +21,21 @@ int connectToServer(const char* ip) {
     if (inet_pton(AF_INET, ip, &serv_addr.sin_addr) <= 0) {
         printf("\nInvalid address / Address not supported\n");
         close(client_fd);
-        return 0;
+        return;
     }
 
     if (connect(client_fd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
         printf("\nConnection Failed\n");
         close(client_fd);
-        return 0;
+        return;
     }
     printf("Connected to %s.\n", ip);
-    //printf("%d\n", client_fd);
     return client_fd;
 }
 
 void readData(const char* ip, char* data, int dataSize) {
     int client_fd = connectToServer(ip);
-    if (client_fd < 1) return;
+    if (client_fd < 0) return;
 
     while (1) {
         int bytes = read(client_fd, data, dataSize - 1);
@@ -51,7 +50,7 @@ void readData(const char* ip, char* data, int dataSize) {
 
 void sendData(const char* ip, const char* data, int dataSize) {
     int client_fd = connectToServer(ip);
-    if (client_fd < 1) return;
+    if (client_fd < 0) return;
 
     send(client_fd, data, dataSize, 0);
     printf("Verzonden\n");

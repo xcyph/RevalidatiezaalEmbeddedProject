@@ -111,10 +111,6 @@ int main(int argc, char const* argv[]) {
                 sscanf(buffer, "Hartslag %d Zuurstof %d Encoder %d", &hartslag, &zuurstof, &encoder);
                 stuurnaarLCD(i2c_fd_lcd, hartslag, zuurstof, encoder);
             }
-            else if (strncmp("Temperatuur", buffer, 4) == 0) {}
-            else if (strncmp("Geen", buffer, 4) != 0) {
-                printf("Ongeldige kaart: %s\n", buffer);
-            }
         }
         close(new_socket);
     }
