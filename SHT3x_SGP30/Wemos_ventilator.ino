@@ -67,10 +67,10 @@ void loop()
     if (temperature >= 30 || humidity >= 75) {
       myservo.write(120); // ventilator 100%
     } 
-    else if (temperature >= 28 || humidity >= 65) {
+    else if (temperature >= 28 || humidity >= 67) {
       myservo.write(99); // ventilator 50%
     }
-    else if (temperature >= 26 || humidity >= 60) {
+    else if (temperature >= 26 || humidity >= 62) {
       myservo.write(95); // ventilator 25%
     }
     else {
