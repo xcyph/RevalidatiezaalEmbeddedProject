@@ -1,6 +1,6 @@
 /*!
   @file wemos_pulsoxy.ino
-  @date 31 may 2024
+  @date 21 may 2024
   @author Ruben van Eijken
 
   Leest de pulsoxymeter uit vanaf een Wemos D1 mini en kan dit doorsturen via een socket-verbinding.
@@ -45,6 +45,9 @@ int8_t validSPO2 = 0; //indicator to show if the SPO2 calculation is valid
 int32_t __attribute__((aligned(4))) heartRate; //heart rate value
 int8_t validHeartRate = 0; //indicator to show if the heart rate calculation is valid
 
+int16_t hr = 0;
+int16_t sp = 0;
+
 // Wifi poort instellen
 const int serverPort = 8080;
 WiFiServer server(serverPort);
@@ -85,12 +88,13 @@ void loop() {
   if (heartRate > 160 || spo2 < 90) tone(buzzerPin, 1000);
   else noTone(buzzerPin);
   // Zet data in string voor Pi
-  int16_t hr = (int16_t)heartRate;
-  int16_t sp = (int16_t)spo2;
-  if (hr < 0) hr *= -1;
-  if (sp < 0) sp *= -1;
-  if (hr == 999) hr = 220;
-  if (sp == 999) sp = 100;
+
+  if (heartRate >= 0 || heartRate != 999) {
+    hr = (int16_t)heartRate;
+  }
+  if (spo2 >= 0 || spo2 != 999) {
+    sp = (int16_t)spo2;
+  }
   snprintf(txBuffer, TXBUFFER_SIZE, "Hartslag %3d Zuurstof %3d Encoder %4d", hr, sp, encoderCount);
   // Check voor een nieuwe client
   WiFiClient client = server.available();
