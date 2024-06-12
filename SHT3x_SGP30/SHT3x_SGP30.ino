@@ -4,6 +4,7 @@
 #include <Adafruit_SGP30.h>
 #include <ESP8266WiFi.h>
 #include <Servo.h>
+#include <Math.h>
 
 #define TXBUFFER_SIZE 49
 #define WIFI_SSID "revalidatieD-wifi"
@@ -57,10 +58,28 @@ void setup()
 
 void loop() 
 {
-  if ((millis() - tijd) > 100) {
+  if ((millis() - tijd) > 150) {
     co2Read();
     tempHumRead();
+    Serial.println((String) "temperatuur: " + temperature + " luchtvochtigheid: " + humidity);
     tijd = millis();
+
+    if (temperature >= 30 || humidity >= 75) {
+      myservo.write(120); // ventilator 100%
+    } 
+    else if (temperature >= 28 || humidity >= 65) {
+      myservo.write(99); // ventilator 50%
+    }
+    else if (temperature >= 26 || humidity >= 60) {
+      myservo.write(95); // ventilator 25%
+    }
+    else {
+      myservo.write(90); // ventilator 0%
+    }
+    if (sgp30.eCO2 > CO2_THRESHOLD) {
+      Serial.println("Waarschuwing: CO2-niveau is te hoog!");
+      myservo.write(120); // ventilator 100%
+    }
   }
   snprintf(txBuffer, TXBUFFER_SIZE, "Temperatuur %2.1f Luchtvochtigheid %2.1f eCO2 %4d", temperature, humidity, co2Val);
   // Check voor een nieuwe client
@@ -71,16 +90,6 @@ void loop()
     // Sluit de verbinding met de client
     client.stop();
     Serial.println("Client verbinding verbroken");
-  }
-  if ((temperature >= 27 && temperature < 30) || (humidity >= 60 && humidity < 70)) {
-    myservo.write(99);  // ventilator 50%
-  } else if ((temperature >= 30) || (humidity >= 70)) {
-    myservo.write(120); // ventilator 100%
-  } else if (sgp30.eCO2 > CO2_THRESHOLD) {
-    Serial.println("Waarschuwing: CO2-niveau is te hoog!");
-    myservo.write(120); // ventilator 100%
-  } else {
-    myservo.write(90); // ventilator 0%
   }
 }
 
