@@ -4,8 +4,8 @@
 
 const char* ssid = "revalidatieD-wifi";
 const char* password = "";
-const char* server_ip = "0.0.0.0"; // IP van de Raspberry Pi server
-const int server_port = 12345;
+const char* server_ip = "192.168.178.226"; // IP van de Raspberry Pi server
+const int server_port = 9999;
 
 WiFiClient client;
 Adafruit_SHT31 sht31 = Adafruit_SHT31();
@@ -29,6 +29,9 @@ void setup() {
 
 void loop() {
   if (client.connect(server_ip, server_port)) {
+    // Stuur identificerende boodschap
+    client.println("TEMP_SENSOR");
+
     float temperature = sht31.readTemperature(); // Lees de temperatuur
 
     if (!isnan(temperature)) {
