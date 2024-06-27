@@ -28,5 +28,14 @@ void loop() {
     Serial.println("Fout bij het lezen van de SHT31 sensor!");
   }
 
+  //Temperatuur
+  if(temperature > 27){
+    Serial.println("Servo draait 180 graden");
+  } else {
+    Serial.println("Servo staat stil");
+  }
+
+
+  
   delay(2000); // Wacht 2 seconden voor de volgende meting
 }
