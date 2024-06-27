@@ -3,7 +3,7 @@ import threading
 
 # Server configuratie
 server_ip = '192.168.178.226'
-server_port = 8080
+server_port = 9999
 
 # Drempelwaarden voor de temperatuur
 upper_threshold = 25.0
