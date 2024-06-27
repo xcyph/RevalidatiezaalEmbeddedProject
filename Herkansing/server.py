@@ -2,8 +2,8 @@ import socket
 import threading
 
 # Server configuratie
-server_ip = '0.0.0.0'
-server_port = 12345
+server_ip = '192.168.178.226'
+server_port = 8080
 
 # Drempelwaarden voor de temperatuur
 upper_threshold = 25.0
