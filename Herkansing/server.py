@@ -6,8 +6,8 @@ server_ip = '192.168.178.226'
 server_port = 9999
 
 # Drempelwaarden voor de temperatuur
-upper_threshold = 25.0
-lower_threshold = 20.0
+upper_threshold = 27.0
+lower_threshold = 26.0
 
 # Functie om verbindingen af te handelen
 def handle_client(client_socket):
