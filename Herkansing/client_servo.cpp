@@ -3,8 +3,8 @@
 
 const char* ssid = "revalidatieD-wifi";
 const char* password = "";
-const char* server_ip = "0.0.0.0"; // IP van de Raspberry Pi server
-const int server_port = 12345;
+const char* server_ip = "192.168.178.226"; // IP van de Raspberry Pi server
+const int server_port = 8088;
 
 WiFiClient client;
 Servo myservo;
